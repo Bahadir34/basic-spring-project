@@ -1,7 +1,10 @@
 package com.example.demo.controller;
 
 import com.example.demo.entity.User;
+import com.example.demo.messages.SuccessMessages;
+import com.example.demo.payload.request.LoginRequest;
 import com.example.demo.payload.request.RegisterRequest;
+import com.example.demo.payload.response.AuthResponse;
 import com.example.demo.payload.response.RegisterResponse;
 import com.example.demo.payload.response.ResponseMessage;
 import com.example.demo.service.AuthenticationService;
@@ -32,6 +35,18 @@ public class AuthenticationContoller {
                 .object(registerResponse)
                 .message("Kullanıcı kaydoldu!")
                 .httpStatus(HttpStatus.CREATED)
+                .build();
+    }
+
+    @PostMapping("/login")
+    public ResponseMessage<AuthResponse> login(@RequestBody @Valid LoginRequest loginRequest){
+
+        AuthResponse authResponse = authenticationService.login(loginRequest);
+
+        return ResponseMessage.<AuthResponse>builder()
+                .object(authResponse)
+                .message(SuccessMessages.LOGIN_SUCCESS)
+                .httpStatus(HttpStatus.OK)
                 .build();
     }
 }

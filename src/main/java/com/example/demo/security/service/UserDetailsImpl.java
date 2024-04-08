@@ -1,20 +1,27 @@
 package com.example.demo.security.service;
 
 import com.example.demo.entity.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.*;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserDetailsImpl implements UserDetails {
 
     private Long id;
     private String fullName;
-
     private String userName;
-
     private String email;
+
+    @JsonIgnore
     private String password;
     private Collection<? extends GrantedAuthority> authorities;
 

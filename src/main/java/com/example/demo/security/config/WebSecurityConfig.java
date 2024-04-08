@@ -97,5 +97,6 @@ public class WebSecurityConfig {
             "/js/**",
             "/auth/**",
             "/actuator/**",
+            "/api/v1/auth/login"
     };
 }

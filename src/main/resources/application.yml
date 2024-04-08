@@ -13,5 +13,5 @@ spring:
 
 backendapi:
   app:
-    jwtExpirationMs: 8640000
-    jwtSecret: thisprojectdemoforspring3.2.3tolearnmoreaboutspringframework.Itwasusedh2databasetosaveinformationondatabase
+    jwtExpirationMs: 86400000
+    jwtSecret: kermesprojectkermesprojectkermesprojectkermesprojectkermesprojectkermesprojectkermesprojectkermesprojectkermesprojectkermesprojectkermesprojectkermesprojectkermesprojectkermesprojectkermesprojectkerme.?_@sprojectkermesprojectkermesproject

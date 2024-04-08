@@ -39,14 +39,13 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         String jwt = parseJwt(request);
 
         // !!! Validate JWT Token
-
         if(jwt != null && jwtUtils.validateJwtToken(jwt))
         {
             try {
                 // !!! username bilgisini JWT tokenden çekiyoruz.
                 String userName = jwtUtils.getUserNameFromJwtToken(jwt);
                 UserDetails userDetails = userDetailsService.loadUserByUsername(userName);
-                request.setAttribute("email" , userName);
+                request.setAttribute("userName" , userName);
 
                 // Security Context'e authenticate edilen kullanıcı gönderiliyor.
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
@@ -67,7 +66,6 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     private String parseJwt(HttpServletRequest request)
     {
         String headerAuth =  request.getHeader("Authorization");
-
         if(StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer"))
         {
             return headerAuth.substring(7);
