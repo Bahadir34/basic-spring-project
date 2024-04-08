@@ -15,8 +15,15 @@ public class UserController {
 
 
     @GetMapping("/hello")
-    @PreAuthorize("hasAnyAuthority('USER')")
+    @PreAuthorize("hasAnyAuthority('CUSTOMER')")
     public String hello(){
-        return "Hello User";
+
+        try{
+            return "Hello User";
+        }catch (RuntimeException e){
+            return e.getMessage();
+        }
+
+
     }
 }

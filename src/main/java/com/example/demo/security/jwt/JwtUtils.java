@@ -42,8 +42,13 @@ public class JwtUtils {
     // Not : Validate JWT *********************************************
     public boolean validateJwtToken(String jwtToken) {
         try {
-            Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(jwtToken);
-            return true;
+            try{
+                Jwts.parser().setSigningKey(Keys.hmacShaKeyFor(jwtSecret.getBytes())).parseClaimsJws(jwtToken);
+                return true;
+            }catch(RuntimeException e){
+                //System.out.println("jwt validasyon hatası " + e.getMessage());
+            }
+
         } catch (ExpiredJwtException e) {
             LOGGER.error("Jwt token is expired : {}", e.getMessage());
         } catch (UnsupportedJwtException e) {
@@ -62,7 +67,7 @@ public class JwtUtils {
     // Not : getUsernameFromJWT ***************************************
     public String getUserNameFromJwtToken(String token) {
         return Jwts.parser()
-                .setSigningKey(jwtSecret)
+                .setSigningKey(Keys.hmacShaKeyFor(jwtSecret.getBytes()))
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
