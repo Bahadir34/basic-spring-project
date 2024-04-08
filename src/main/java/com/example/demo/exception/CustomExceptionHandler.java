@@ -25,6 +25,7 @@ public class CustomExceptionHandler {
     }
 
     @ExceptionHandler(ConflictException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
     public Map<String,String> handleConflictException(ConflictException conflictException){
         Map<String,String> errorMap = new HashMap<>();
         errorMap.put("message" , conflictException.getMessage());
@@ -32,6 +33,7 @@ public class CustomExceptionHandler {
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String,String> handleResourceNotFoundException(ResourceNotFoundException exception){
         Map<String,String> errorMap = new HashMap<>();
         errorMap.put("message" , exception.getMessage());

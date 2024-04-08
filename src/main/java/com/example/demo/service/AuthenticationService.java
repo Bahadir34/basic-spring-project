@@ -11,13 +11,11 @@ import com.example.demo.payload.request.LoginRequest;
 import com.example.demo.payload.request.RegisterRequest;
 import com.example.demo.payload.response.AuthResponse;
 import com.example.demo.payload.response.RegisterResponse;
-import com.example.demo.payload.response.ResponseMessage;
 import com.example.demo.payload.validator.RegisterUniqueFieldsValidator;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.security.jwt.JwtUtils;
 import com.example.demo.security.service.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -79,18 +77,15 @@ public class AuthenticationService {
     public AuthResponse login(LoginRequest loginRequest) {
 
         try{
-            System.out.println("1");
             String userName = loginRequest.getUserName();
             String password = loginRequest.getPassword();
-            System.out.println("2");
 
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userName,password));
-            System.out.println("3");
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            System.out.println("4");
 
-            String token = "Bearer" + jwtUtils.generateJwtToken(authentication);
-            System.out.println("JWT Token : " + token);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            String token = "Bearer " + jwtUtils.generateJwtToken(authentication);
+            //System.out.println("JWT Token : " + token);
             UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
             Set<String> roleSet = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toSet());
@@ -99,10 +94,11 @@ public class AuthenticationService {
                     .token(token)
                     .role(String.join(" " , roleSet))
                     .build();
-
+            //System.out.println(authResponse.toString());
             return authResponse;
 
         }catch(RuntimeException e){
+            System.out.println(e);
             throw new ResourceNotFoundException(ExceptionMessages.LOGIN_EXCEPTION);
         }
     }
