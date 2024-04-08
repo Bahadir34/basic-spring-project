@@ -2,6 +2,7 @@ package com.example.demo.security.jwt;
 
 import com.example.demo.security.service.UserDetailsImpl;
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.Keys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,8 +12,7 @@ import org.springframework.stereotype.Component;
 import java.util.Date;
 
 @Component
-public class  JwtUtils
-{
+public class JwtUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(JwtUtils.class);
 
     @Value("${backendapi.app.jwtExpirationMs}")
@@ -22,48 +22,52 @@ public class  JwtUtils
     private String jwtSecret;
 
     // Not : Generate JWT *********************************************
-    public String generateJwtToken(Authentication authentication)
-    {
-        UserDetailsImpl userDetails =(UserDetailsImpl) authentication.getPrincipal();
+    public String generateJwtToken(Authentication authentication) {
+
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         return generateTokenFromUserName(userDetails.getUsername());
+
     }
 
-    public String generateTokenFromUserName(String userName)
-    {
+    public String generateTokenFromUserName(String userName) {
+
         return Jwts.builder()
                 .setSubject(userName)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(new Date().getTime() + jwtExpirationMs))
-                .signWith(SignatureAlgorithm.HS512 , jwtSecret)
-                .compact();
+                .signWith(Keys.hmacShaKeyFor(jwtSecret.getBytes())).compact();
+
     }
 
     // Not : Validate JWT *********************************************
-    public boolean validateJwtToken(String jwtToken)
-    {
+    public boolean validateJwtToken(String jwtToken) {
         try {
-            Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(jwtToken);
-            return true;
+            try{
+                Jwts.parser().setSigningKey(Keys.hmacShaKeyFor(jwtSecret.getBytes())).parseClaimsJws(jwtToken);
+                return true;
+            }catch(RuntimeException e){
+                //System.out.println("jwt validasyon hatası " + e.getMessage());
+            }
+
         } catch (ExpiredJwtException e) {
-            LOGGER.error("Jwt token is expired : {}" , e.getMessage());
+            LOGGER.error("Jwt token is expired : {}", e.getMessage());
         } catch (UnsupportedJwtException e) {
-            LOGGER.error("Jwt token is unsupported : {}" , e.getMessage());
+            LOGGER.error("Jwt token is unsupported : {}", e.getMessage());
         } catch (MalformedJwtException e) {
-            LOGGER.error("Jwt token is invalid : {}" , e.getMessage());
+            LOGGER.error("Jwt token is invalid : {}", e.getMessage());
         } catch (SignatureException e) {
-            LOGGER.error("Jwt Signature is invalid : {}" , e.getMessage());
+            LOGGER.error("Jwt Signature is invalid : {}", e.getMessage());
         } catch (IllegalArgumentException e) {
-            LOGGER.error("Jwt is empty : {}" , e.getMessage());
+            LOGGER.error("Jwt is empty : {}", e.getMessage());
         }
 
         return false;
     }
 
     // Not : getUsernameFromJWT ***************************************
-    public String getUserNameFromJwtToken(String token)
-    {
+    public String getUserNameFromJwtToken(String token) {
         return Jwts.parser()
-                .setSigningKey(jwtSecret)
+                .setSigningKey(Keys.hmacShaKeyFor(jwtSecret.getBytes()))
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();

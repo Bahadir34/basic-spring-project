@@ -1,6 +1,7 @@
 package com.example.demo.exception;
 
 import com.example.demo.exception.exceptions.ConflictException;
+import com.example.demo.exception.exceptions.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -24,10 +25,18 @@ public class CustomExceptionHandler {
     }
 
     @ExceptionHandler(ConflictException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
     public Map<String,String> handleConflictException(ConflictException conflictException){
         Map<String,String> errorMap = new HashMap<>();
         errorMap.put("message" , conflictException.getMessage());
         return errorMap;
+    }
 
+    @ExceptionHandler(ResourceNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String,String> handleResourceNotFoundException(ResourceNotFoundException exception){
+        Map<String,String> errorMap = new HashMap<>();
+        errorMap.put("message" , exception.getMessage());
+        return errorMap;
     }
 }

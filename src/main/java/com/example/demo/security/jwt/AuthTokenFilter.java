@@ -37,24 +37,33 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     {
         // !!! requestin icinden JWT token çekiliyor.
         String jwt = parseJwt(request);
-
+        //System.out.println("jwt : " + jwt);
+        //System.out.println("jwtUtils.validateJwtToken(jwt)" + jwtUtils.validateJwtToken(jwt));
         // !!! Validate JWT Token
-
         if(jwt != null && jwtUtils.validateJwtToken(jwt))
         {
             try {
                 // !!! username bilgisini JWT tokenden çekiyoruz.
+                System.out.println("1");
                 String userName = jwtUtils.getUserNameFromJwtToken(jwt);
+                System.out.println("tokenden çekilen username : " + userName);
+                System.out.println("2");
                 UserDetails userDetails = userDetailsService.loadUserByUsername(userName);
-                request.setAttribute("email" , userName);
+                System.out.println("3");
+                request.setAttribute("userName" , userName);
+                System.out.println("4");
 
                 // Security Context'e authenticate edilen kullanıcı gönderiliyor.
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         userDetails , null , userDetails.getAuthorities()
                 );
 
+                System.out.println("5");
+
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                System.out.println("6");
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+                System.out.println("7");
             } catch (UsernameNotFoundException e) {
                 LOGGER.error("Cannot set user authentication" , e);
             }
@@ -67,7 +76,6 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     private String parseJwt(HttpServletRequest request)
     {
         String headerAuth =  request.getHeader("Authorization");
-
         if(StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer"))
         {
             return headerAuth.substring(7);
